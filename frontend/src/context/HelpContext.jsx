@@ -37,7 +37,7 @@ export const HelpProvider = ({ children }) => {
   const getGeneros = async () => {
     try {
       const response = await getGenders();
-      setGeneros(response.data);
+      setGeneros(response.data.data);
     } catch (error) {
       setErrors([error.response.data.message]);
     }
@@ -46,7 +46,7 @@ export const HelpProvider = ({ children }) => {
   const getCategorias = async () => {
     try {
       const response = await getCategory();
-      setCategorias(response.data);
+      setCategorias(response.data.data);
     } catch (error) {
       setErrors([error.response.data.message]);
     }
@@ -55,7 +55,7 @@ export const HelpProvider = ({ children }) => {
   const getRazas = async () => {
     try {
       const response = await getRaces();
-      setRazas(response.data);
+      setRazas(response.data.data);
     } catch (error) {
       setErrors([error.response.data.message]);
     }

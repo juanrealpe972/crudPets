@@ -15,33 +15,36 @@ import HelpContext from "../context/HelpContext";
 const RegisterPets = ({ mode }) => {
   const navigate = useNavigate();
   const {
-    getPets,
-    getPetsForUser,
     getGeneros,
     getCategorias,
     getRazas,
+    generos,
+    razas,
+    categorias,
     createPet,
   } = useContext(HelpContext);
+
   const [formData, setFormData] = useState({
     nombre: "",
     raza: "",
     categoria: "",
-    image: "",
+    imagen: "",
     genero: "",
   });
 
-  const handleChange = () => {};
-
-  const [generos, setGeneros] = useState([]);
-  const [razas, setRazas] = useState([]);
-  const [categorias, setCategorias] = useState([]);
-  const [users, setUsers] = useState([]);
-
   useEffect(() => {
-    getGeneros(),
-    getCategorias(),
-    getRazas()
+    getGeneros();
+    getCategorias();
+    getRazas();
   }, []);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = (e) => {
+    setFormData({ ...formData, imagen: e.target.files[0] });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -52,29 +55,11 @@ const RegisterPets = ({ mode }) => {
         genero: formData.genero,
         categoria: formData.categoria,
         raza: formData.raza,
-        image: formData.image,
+        imagen: formData.imagen,
       };
-
-      axiosClient.post("/mascotas/registrar", data).then((response) => {
-        console.log(response.data);
-
-        if (response.status == 200) {
-          Swal.fire({
-            title: response.data.message,
-            text: response.data.message,
-            icon: "success",
-            confirmButtonText: "Cool",
-          });
-          navigate("/dashboard");
-        } else if (response.status == 404) {
-          Swal.fire({
-            title: "Error!",
-            text: response.data.message,
-            icon: "success",
-            confirmButtonText: "Cool",
-          });
-        }
-      });
+      if (mode === "create") {
+        createPet(data);
+      }
     } catch (error) {}
   };
 
@@ -87,13 +72,13 @@ const RegisterPets = ({ mode }) => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="flex mt-28 items-center justify-between">
+      <div className="flex mt-12 items-center justify-between">
         <FaAngleLeft
           className="mr-20 flex text-white text-xl cursor-pointer"
           onClick={() => navigate("/listpets")}
         />
         <label className="flex mr-20 text-white font-semibold">
-          {mode === "create" ? "Adicionar mascota" : "Actualizar mascota"}
+          {mode === "create" ? "Adicionar Mascota" : "Modificar Mascota"}
         </label>
         <img
           className="flex justify-between rounded-full"
@@ -101,16 +86,30 @@ const RegisterPets = ({ mode }) => {
           alt=""
         />
       </div>
-      <div className="mt-16">
-        <img className="rounded-full" src={photoIcon} alt="" />
+      <div className="mt-10">
+        {mode === "update" && typeof formData.imagen === "object" ? (
+          <img
+            src={URL.createObjectURL(formData.imagen)}
+            alt="user"
+            className="h-36 w-36 object-cover rounded-full mx-auto"
+          />
+        ) : (
+          <img
+            src={photoIcon}
+            alt="user"
+            className="h-36 w-36 object-cover rounded-full mx-auto"
+          />
+        )}
       </div>
-      <form onSubmit={handleSubmit} className="w-full max-w-sm pt-24">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm pt-14">
         <div className="mb-4">
           <input
             type="text"
             id="nombre"
-            placeholder="Nombre"
+            name="nombre"
+            placeholder="Nombre de la mascota"
             value={formData.nombre}
+            onChange={handleChange}
             className="w-full bg-slate-500 px-3 py-2 rounded-3xl border border-gray-400 bg-transparent focus:outline-none ml-5 placeholder-blue-950"
             style={{ height: "40px", width: "90%" }}
             required
@@ -118,27 +117,36 @@ const RegisterPets = ({ mode }) => {
         </div>
         <div className="mb-4">
           <select
-            className="w-[345px] bg-slate-500 px-3 py-2 rounded-3xl border border-gray-400 bg-transparent focus:outline-none ml-5"
+            className="w-[345px] bg-slate-500 px-3 py-2 text-slate-800 rounded-3xl border border-gray-400 bg-transparent focus:outline-none ml-5"
+            name="raza"
+            id="raza"
             value={formData.raza}
-            name=""
-            id=""
+            onChange={handleChange}
           >
-            <option> Seleccione la raza... </option>
+            <option value="" hidden>
+              Seleccionar la raza...
+            </option>
             {razas.map((race) => (
-              <option value={race.id}> {race.nombre_raza} </option>
+              <option key={race.id} value={race.id}>
+                {race.name}
+              </option>
             ))}
           </select>
         </div>
         <div className="mb-4">
           <select
-            className="w-[345px] bg-slate-500 px-3 py-2 rounded-3xl border border-gray-400 bg-transparent focus:outline-none ml-5"
+            className="w-[345px] bg-slate-500 px-3 py-2 text-slate-800 rounded-3xl border border-gray-400 bg-transparent focus:outline-none ml-5"
             name="categoria"
             value={formData.categoria}
-            id=""
+            onChange={handleChange}
           >
-            <option> Seleccione categoria... </option>
+            <option value="" hidden>
+              Seleccionar la categoría...
+            </option>
             {categorias.map((category) => (
-              <option value={category.id}> {category.nombre} </option>
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
             ))}
           </select>
         </div>
@@ -149,22 +157,22 @@ const RegisterPets = ({ mode }) => {
             name="image"
             className="hidden"
             id="fileInput"
-            onChange={handleChange}
+            onChange={handleFileChange}
           />
           <label
             htmlFor="fileInput"
-            className="cursor-pointer items-center w-auto flex justify-center bg-blue-100 rounded-full border"
+            className="cursor-pointer items-center w-[345px] flex justify-center bg-slate-500 rounded-full border-gray-400 border ml-5"
           >
-            {formData.image ? (
+            {formData.imagen ? (
               <div className="relative">
                 <button
                   type="button"
-                  className="absolute top-0 right-0 p-1 bg-gray-300 rounded-full"
-                  onClick={() => setFormData({ ...formData, image: "" })}
+                  className="absolute top-0 right-0 p-1 bg-slate-500 rounded-full"
+                  onClick={() => setFormData({ ...formData, imagen: "" })}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-6 w-6 text-gray-600"
+                    className="h-6 w-6 text-black"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -177,23 +185,10 @@ const RegisterPets = ({ mode }) => {
                     />
                   </svg>
                 </button>
-                {mode === "update" && typeof formData.imagen === "string" ? (
-                  <img
-                    src={`http://localhost:4000/img/${formData.image}`}
-                    alt="user"
-                    className="h-28 w-28 object-cover rounded-full mx-auto"
-                  />
-                ) : (
-                  <img
-                    src={URL.createObjectURL(formData.imagen)}
-                    alt="user"
-                    className="h-28 w-28 object-cover rounded-full mx-auto"
-                  />
-                )}
               </div>
             ) : (
-              <div className="flex items-center justify-center w-28 h-28 border border-gray-300 rounded-full hover:bg-gray-50 transition duration-300">
-                <span className="text-gray-500 text-center">
+              <div className="flex items-center justify-center text-slate-800 w-[345px] h-10 border  rounded-full bg-transparent focus:outline-none transition duration-300">
+                <span className="text-black text-left">
                   Seleccionar imagen
                 </span>
               </div>
@@ -201,34 +196,35 @@ const RegisterPets = ({ mode }) => {
           </label>
           <img
             src={iconCamera}
-            alt="camera"
+            alt="iconCamera"
             className="absolute top-0 right-8 mt-3 ml-3 rounded-full"
             style={{ width: "20px", height: "20px" }}
           />
         </div>
 
         <div className="mb-4">
-          <div className="relative">
-            <select
-              className="w-[345px] bg-slate-500 px-3 py-2 rounded-3xl border border-gray-400 bg-transparent focus:outline-none ml-5"
-              name="genero"
-              value={formData.genero}
-              id=""
-            >
-              <option> Seleccione genero... </option>
-              {generos.map((gender) => (
-                <option value={gender.id}> {gender.nombre} </option>
-              ))}
-            </select>
-          </div>
+          <select
+            className="w-[345px] bg-slate-500 px-3 py-2 text-slate-800 rounded-3xl border border-gray-400 bg-transparent focus:outline-none ml-5"
+            name="genero"
+            value={formData.genero}
+            onChange={handleChange}
+          >
+            <option value="" hidden>
+              Seleccionar el género...
+            </option>
+            {generos.map((gender) => (
+              <option key={gender.id} value={gender.id}>
+                {gender.name}
+              </option>
+            ))}
+          </select>
         </div>
-        <button>
+        <button type="submit">
           <img
-            className="rounded-full ml-4 cursor-pointer"
+            className="rounded-full ml-5 cursor-pointer"
             style={{ width: "90%" }}
             src={save}
             alt=""
-            onSubmit={handleSubmit}
           />
         </button>
       </form>
