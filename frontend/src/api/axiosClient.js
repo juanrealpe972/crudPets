@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosClient = axios.create({
-  baseURL: "http://localhost:4002"
+  baseURL: "http://localhost:4001"
 });
 
 axiosClient.interceptors.request.use((config) => {
@@ -10,7 +10,6 @@ axiosClient.interceptors.request.use((config) => {
   if (token) {
     config.headers['token'] = token
   }
-
   return config;
 }, (error) => {
   return Promise.reject(error);

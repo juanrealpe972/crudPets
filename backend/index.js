@@ -1,26 +1,34 @@
-import express from "express"
-import bodyParser from "body-parser";
-import cors from "cors"
-import routerUser from "./src/routes/user.routes.js"
-import routerCategory from "./src/routes/category.routes.js";
-import routerGenders from "./src/routes/genders.routes.js";
-import routerRaces from "./src/routes/races.routes.js";
-import routerPets from "./src/routes/pets.routes.js";
+import express from 'express'
+import body_parser from 'body-parser'
+import cors from 'cors'
+
+import routeMascotas from './src/routes/mascotas.routes.js'
+import routerUser from './src/routes/user.routes.js'
+import routerCategorias from './src/routes/categorias.routes.js'
+import routerRazas from './src/routes/razas.routes.js'
+import routerGeneros from './src/routes/generos.routes.js'
 
 const app = express()
 app.use(cors())
-app.use(bodyParser.json());
+app.use(body_parser.json())
+app.use(body_parser.urlencoded({extend: false}))
 
-const PORT = 4002
+const PORT = 4001
 
-app.use("/v1", routerUser)
-app.use("/v1", routerCategory)
-app.use("/v1", routerGenders)
-app.use("/v1", routerRaces)
-app.use("/v1", routerPets)
+app.use('/v1', routerUser)
+app.use('/v1', routeMascotas)
+app.use('/v1', routerGeneros)
+app.use('/v1', routerCategorias)
+app.use('/v1', routerRazas)
+
+app.set("view engine", "ejs")
+app.set("views", "./view")
 
 app.use(express.static('./public'))
+app.get("/document", (req, res) => {
+    res.render("document.ejs")
+})
 
-app.listen(PORT, () => {
-    console.log("Servidor se esta ejecutando en el puerto: ", PORT);
+app.listen(4001, () => {
+    console.log(`Servidor se esta ejecutando en el puerto: ${PORT}`);
 })
