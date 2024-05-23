@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
 import img from "../assets/bg.jpg";
@@ -12,7 +11,7 @@ import iconDelete from "../assets/btn-delete.jpg";
 import { useHelpsContext } from "../context/HelpsContext.jsx";
 import axiosClient from "../api/axiosClient.js";
 
-const ListarMascota = () => {
+const ListarMascotas = () => {
   const [mascotas, setMascotas] = useState([]);
   const { getMascotasId, setIdMascota, setMode } = useHelpsContext();
   const navigate = useNavigate();
@@ -23,14 +22,42 @@ const ListarMascota = () => {
 
   const getMascotas = () => {
     axiosClient.get(`/v1/mascotas`).then((response) => {
-      setMascotas(response.data);
+      const mascotasConImagenes = response.data.map(async (mascota) => {
+        const imagePath = await fetchImagePath(mascota.imagen);
+        return { ...mascota, imagePath };
+      });
+      Promise.all(mascotasConImagenes).then(setMascotas);
     });
+  };
+
+  const fetchImagePath = async (imagen) => {
+    if (!imagen) return '';
+
+    const imgPath = `http://localhost:4001/img/${imagen}`;
+    const uploadsPath = `http://localhost:4001/imguploads/${imagen}`;
+
+    try {
+      const imgResponse = await fetch(imgPath, { method: 'HEAD' });
+      if (imgResponse.ok) {
+        return imgPath;
+      } else {
+        const uploadsResponse = await fetch(uploadsPath, { method: 'HEAD' });
+        if (uploadsResponse.ok) {
+          return uploadsPath;
+        } else {
+          return ''; // Opcional: configurar una imagen de respaldo si ninguna ruta es válida
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching images:', error);
+      return ''; // Opcional: configurar una imagen de respaldo en caso de error
+    }
   };
 
   const deleteMascotas = (id) => {
     try {
       axiosClient.delete(`/v1/mascotas/${id}`).then((response) => {
-        if (response.status == 200) {
+        if (response.status === 200) {
           alert(response.data.message);
           getMascotas();
         } else {
@@ -44,6 +71,7 @@ const ListarMascota = () => {
 
   const logout = () => {
     localStorage.clear();
+    alert('Cierre de sesión éxitoso');
     navigate("/");
   };
 
@@ -56,9 +84,9 @@ const ListarMascota = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="flex flex-row mt-28 justify-center">
+      <div className="flex flex-row mt-32 justify-center">
         <label className="text-white font-semibold">Administrar Mascotas</label>
-        <div className="ml-10">
+        <div className="ml-11">
           <img
             className="rounded-full cursor-pointer"
             src={iconClose}
@@ -67,7 +95,7 @@ const ListarMascota = () => {
           />
         </div>
       </div>
-      <div className="mt-10">
+      <div className="mt-8">
         <img
           className="rounded-full cursor-pointer"
           src={buttonAdd}
@@ -79,7 +107,7 @@ const ListarMascota = () => {
         />
       </div>
       <div
-        className="flex flex-col items-center w-[400px] max-w-4xl overflow-hidden mt-6"
+        className="flex flex-col items-center w-[400px] max-w-4xl overflow-hidden mt-4"
         style={{ maxHeight: "60vh", overflowY: "auto" }}
       >
         {mascotas.length > 0 ? (
@@ -92,7 +120,7 @@ const ListarMascota = () => {
                 <img
                   className="object-cover rounded-full ml-2"
                   alt={mascota.imagen}
-                  src={`http://localhost:4001/img/${mascota.image}`}
+                  src={mascota.imagePath || 'path/to/default/image.jpg'}
                 />
               </div>
               <div className="flex text-sm flex-col justify-center ml-2 w-24">
@@ -129,11 +157,11 @@ const ListarMascota = () => {
             </div>
           ))
         ) : (
-          <p>No hay mascotas registradasd</p>
+          <p>No hay mascotas registradas</p>
         )}
       </div>
     </div>
   );
 };
 
-export default ListarMascota;
+export default ListarMascotas;

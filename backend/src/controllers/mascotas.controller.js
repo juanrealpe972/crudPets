@@ -9,14 +9,24 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
-
 const upload = multer({ storage: storage });
-export const cargarImage = upload.single("image");
+export const cargarImagen = upload.single("imagen");
+
+const storageUploads = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/imguploads");
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  },
+});
+const uploads = multer({ storage: storageUploads });
+export const cargarImagenUploads = uploads.single("imagen");
 
 export const registrarMascota = async (req, res) => {
   try {
     const { nombre, raza, genero, categoria, fk_user } = req.body;
-    let image = req.file.originalname;
+    let imagen = req.file.originalname;
 
     let sql = `INSERT INTO mascotas (nombre_mascota,fk_raza, fk_categoria, image, fk_genero, fk_user) VALUES (?, ?, ?, ?, ?, ?)`;
 
@@ -34,7 +44,7 @@ export const registrarMascota = async (req, res) => {
 
 export const listarMascotas = async (req, res) => {
   try {
-    let sql = `SELECT id, nombre_mascota, r.*, nombre_categoria AS categoria, nombre_genero AS genero, image 
+    let sql = `SELECT id, nombre_mascota, r.*, nombre_categoria AS categoria, nombre_genero AS genero, imagen 
       FROM mascotas
       JOIN razas r ON fk_raza = id_raza 
       JOIN categorias ON fk_categoria = id_categoria 
@@ -56,7 +66,7 @@ export const actualizarMascota = async (req, res) => {
   try {
     const { id } = req.params;
     const { nombre, raza, genero, categoria } = req.body;
-    let image = req.file ? req.file.originalname : null;
+    let imagen = req.file ? req.file.originalname : null;
 
     let sql = `
       UPDATE mascotas SET 
@@ -68,9 +78,9 @@ export const actualizarMascota = async (req, res) => {
 
     const params = [nombre, raza, genero, categoria];
     // Agregar la actualización de la imagen solo si se proporciona una nueva imagen
-    if (image) {
-      sql += `, image = ?`;
-      params.push(image);
+    if (imagen) {
+      sql += `, imagen = ?`;
+      params.push(imagen);
     }
 
     sql += ` WHERE id = ?`;
@@ -93,11 +103,11 @@ export const buscarMascota = async (req, res) => {
     const { id } = req.params;
 
     let sql = `
-      SELECT id, nombre_mascota, image, r.*, c.*, g.* 
-      FROM mascotas 
-      JOIN razas r ON fk_raza = id_raza 
-      JOIN categorias c ON fk_categoria = id_categoria 
-      JOIN generos g ON fk_genero = id_genero  
+      SELECT id, nombre_mascota, imagen, r.*, c.*, g.* 
+      FROM mascotas
+      JOIN razas r ON fk_raza = id_raza
+      JOIN categorias c ON fk_categoria = id_categoria
+      JOIN generos g ON fk_genero = id_genero
       WHERE id = ?
     `;
 

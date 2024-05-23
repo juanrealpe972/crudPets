@@ -24,6 +24,7 @@ app.set("view engine", "ejs")
 app.set("views", "./view")
 
 app.use(express.static('./public'))
+app.use(express.static('./uploads'))
 
 app.get("/documents", (req, res) => {
     res.render("document.ejs")

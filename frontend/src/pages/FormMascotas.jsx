@@ -17,12 +17,13 @@ const FormMascotas = () => {
   const { idMascota, mode, mascota, getMascotasId } = useHelpsContext();
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
+  const [imagePath, setImagePath] = useState('');
 
   const [formData, setFormData] = useState({
     nombre: "",
+    raza: "",
     categoria: "",
     image: "",
-    raza: "",
     genero: "",
   });
 
@@ -54,10 +55,10 @@ const FormMascotas = () => {
     if (mascota && mode === "update") {
       setFormData({
         nombre: mascota.nombre_mascota || "",
+        raza: mascota.id_raza || "",
         categoria: mascota.id_categoria || "",
         image: mascota.image || "",
         genero: mascota.id_genero || "",
-        raza: mascota.id_raza || "",
       });
     }
   }, [mascota, mode]);
@@ -85,6 +86,33 @@ const FormMascotas = () => {
     }
   };
 
+  useEffect(() => {
+    if (mode === "update" && mascota && mascota.imagen) {
+      const fetchImage = async () => {
+        const imgPath = `http://localhost:4001/img/${mascota.imagen}`;
+        const uploadsPath = `http://localhost:4001/imguploads/${mascota.imagen}`;
+
+        try {
+          const imgResponse = await fetch(imgPath, { method: 'HEAD' });
+          if (imgResponse.ok) {
+            setImagePath(imgPath);
+          } else {
+            const uploadsResponse = await fetch(uploadsPath, { method: 'HEAD' });
+            if (uploadsResponse.ok) {
+              setImagePath(uploadsPath);
+            } else {
+              setImagePath(''); 
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching images:', error);
+          setImagePath(''); 
+        }
+      };
+      fetchImage();
+    }
+  }, [mascota]);
+
   const updateMascotas = (id, data) => {
     try {
       axiosClient.put(`/v1/mascotas/${id}`, data).then((response) => {
@@ -106,7 +134,7 @@ const FormMascotas = () => {
     datosSubmit.append("nombre", formData.nombre);
     datosSubmit.append("raza", formData.raza);
     datosSubmit.append("categoria", formData.categoria);
-    datosSubmit.append("image", formData.image);
+    datosSubmit.append("imagen", formData.image);
     datosSubmit.append("genero", formData.genero);
     try {
       if (mode === "update") {
@@ -120,6 +148,12 @@ const FormMascotas = () => {
     }
   };
 
+  const logout = () => {
+    localStorage.clear();
+    alert('Cierre de sesión éxitoso')
+    navigate("/");
+  };
+
   return (
     <div
       className="flex flex-col items-center min-h-screen"
@@ -129,7 +163,7 @@ const FormMascotas = () => {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="flex mt-12 items-center justify-between">
+      <div className="flex mt-28 items-center justify-between">
         <FaAngleLeft
           className="mr-20 flex text-white text-xl cursor-pointer"
           onClick={() => navigate("/listpets")}
@@ -138,21 +172,18 @@ const FormMascotas = () => {
           {mode === "create" ? "Adicionar mascota" : "Actualizar mascota"}
         </label>
         <img
-          className="flex justify-between rounded-full"
+          className="flex justify-between rounded-full cursor-pointer"
           src={iconClose}
+          onClick={() => logout()}
           alt=""
         />
       </div>
       <div className="mt-16">
-        <img
-          className={`rounded-full ${mode === "update" ? "w-40 h-40" : ""}`}
-          src={
-            mode === "create"
-              ? photoIcon
-              : `http://localhost:4001/img/${mascota.image}`
-          }
-          alt="Foto de mascota"
-        />
+        {imagePath ? (
+          <img className="rounded-full w-40 h-40" src={imagePath} alt={mascota.imagen} />
+        ) : (
+          <img className={`rounded-full ${mode === "update" ? "w-40 h-40" : ""}`} src={photoIcon} />
+        )}
       </div>
       <form onSubmit={handleSubmit} className="w-full max-w-sm pt-24">
         <div className="mb-4">
@@ -163,14 +194,14 @@ const FormMascotas = () => {
             placeholder="Nombre"
             value={formData.nombre}
             onChange={handleChange}
-            className="w-[355px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 bg-transparent focus:outline-none ml-4 placeholder-blue-950"
+            className="w-[355px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 focus:outline-none ml-4 placeholder-blue-950"
             style={{ height: "40px", width: "90%" }}
             required
           />
         </div>
         <div className="mb-4">
           <select
-            className="w-[350px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 bg-transparent focus:outline-none ml-4 placeholder-blue-950"
+            className="w-[350px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 focus:outline-none ml-4 placeholder-blue-950"
             value={formData.raza}
             onChange={handleChange}
             name="raza"
@@ -188,7 +219,7 @@ const FormMascotas = () => {
         </div>
         <div className="mb-4">
           <select
-            className="w-[350px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 bg-transparent focus:outline-none ml-4 placeholder-blue-950"
+            className="w-[350px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 focus:outline-none ml-4 placeholder-blue-950"
             name="categoria"
             value={formData.categoria}
             onChange={handleChange}
@@ -215,7 +246,7 @@ const FormMascotas = () => {
           />
           <label
             htmlFor="fileInput"
-            className="cursor-pointer items-center w-[345px] flex bg-[#8d9db9] rounded-full"
+            className="cursor-pointer items-center w-[345px] flex bg-[#96a2ba] rounded-full"
           >
             <div className="flex items-center w-[200px] h-10 transition duration-300">
               <span className="text-blue-950 w-full ml-4">
@@ -233,7 +264,7 @@ const FormMascotas = () => {
         <div className="mb-4">
           <div className="relative">
             <select
-              className="w-[350px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 bg-transparent focus:outline-none ml-4 placeholder-blue-950"
+              className="w-[350px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 focus:outline-none ml-4 placeholder-blue-950"
               name="genero"
               value={formData.genero}
               onChange={handleChange}

@@ -1,26 +1,19 @@
 import React, { useEffect } from "react";
-import { Outlet, Navigate, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import { Outlet, useNavigate } from "react-router-dom";
 
 function ProtectedRoute() {
-  const auth = window.localStorage.getItem("token");
+  const auth = localStorage.getItem("token");
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!auth) {
-      Swal.fire({
-        title: 'Error!',
-        text: 'Error! Debes validarte para poder acceder a la ruta',
-        icon: 'error',
-        confirmButtonText: 'Cool'
-      }).then(() => {
-        navigate('/');
-      });
+      alert('Tienes que iniciar sesión primero')
+      navigate('/')
     }
   }, [auth, navigate]);
 
   if (!auth) {
-    return null; // Retorna null mientras el useEffect maneja la redirección
+    return null;
   }
 
   return <Outlet />;

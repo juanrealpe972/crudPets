@@ -5,15 +5,16 @@ import {
   actualizarMascota,
   eliminarMascota,
   buscarMascota,
-  cargarImage,
+  cargarImagen,
+  cargarImagenUploads,
 } from "../controllers/mascotas.controller.js";
 import { validarToken } from "../controllers/user.controller.js";
 
 const routeMascotas = Router();
 
 routeMascotas.get("/mascotas", validarToken, listarMascotas);
-routeMascotas.post("/mascotas", validarToken, cargarImage, registrarMascota);
-routeMascotas.put("/mascotas/:id", validarToken, cargarImage, actualizarMascota);
+routeMascotas.post("/mascotas", validarToken, cargarImagen, registrarMascota);
+routeMascotas.put("/mascotas/:id", validarToken, cargarImagenUploads, actualizarMascota);
 routeMascotas.get("/mascotas/:id", validarToken, buscarMascota);
 routeMascotas.delete("/mascotas/:id", validarToken, eliminarMascota);
 

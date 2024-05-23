@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaAngleLeft } from "react-icons/fa6";
 
@@ -10,6 +10,7 @@ const ConsultarMascota = () => {
   const { mascota, getMascotasId } = useHelpsContext();
   const navigate = useNavigate();
   const { id } = useParams();
+  const [imagePath, setImagePath] = useState('');
 
   useEffect(() => {
     getMascotasId(id);
@@ -18,6 +19,34 @@ const ConsultarMascota = () => {
   if (!mascota) {
     return <div>Cargando...</div>;
   }
+
+  useEffect(() => {
+    if (mascota && mascota.imagen) {
+      const fetchImage = async () => {
+        const imgPath = `http://localhost:4001/img/${mascota.imagen}`;
+        const uploadsPath = `http://localhost:4001/imguploads/${mascota.imagen}`;
+
+        try {
+          const imgResponse = await fetch(imgPath, { method: 'HEAD' });
+          if (imgResponse.ok) {
+            setImagePath(imgPath);
+          } else {
+            const uploadsResponse = await fetch(uploadsPath, { method: 'HEAD' });
+            if (uploadsResponse.ok) {
+              setImagePath(uploadsPath);
+            } else {
+              setImagePath(''); 
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching images:', error);
+          setImagePath(''); 
+        }
+      };
+      fetchImage();
+    }
+  }, [mascota]);
+
   return (
     <div
       className="flex flex-col items-center min-h-screen"
@@ -42,11 +71,11 @@ const ConsultarMascota = () => {
         />
       </div>
       <div className="mt-16 mb-16">
-        <img
-          className="rounded-full w-40"
-          src={`http://localhost:4001/img/${mascota.image}`}
-          alt={mascota.image}
-        />
+        {imagePath ? (
+          <img className="rounded-full w-40" src={imagePath} alt={mascota.imagen} />
+        ) : (
+          <p>Imagen no disponible</p>
+        )}
       </div>
       <div className="flex flex-col">
         <div className="flex flex-row mb-2">
