@@ -28,7 +28,7 @@ export const registrarMascota = async (req, res) => {
     const { nombre, raza, genero, categoria, fk_user } = req.body;
     let imagen = req.file.originalname;
 
-    let sql = `INSERT INTO mascotas (nombre_mascota,fk_raza, fk_categoria, image, fk_genero, fk_user) VALUES (?, ?, ?, ?, ?, ?)`;
+    let sql = `INSERT INTO mascotas (nombre_mascota,fk_raza, fk_categoria, imagen, fk_genero, fk_user) VALUES (?, ?, ?, ?, ?, ?)`;
 
     const [rows] = await pool.query(sql, [ nombre, raza, categoria, imagen, genero, fk_user, ]);
 
