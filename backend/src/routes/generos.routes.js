@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { listarGenders } from "../controllers/generos.controller.js";
-import { verificarUserToken } from "../controllers/user.controller.js";
+import { listarGeneros } from "../controllers/genero.controller.js";
+import { validarToken } from "../controllers/user.controller.js";
 
-const routerGeneros = Router()
+const routeGeneros = Router();
 
-routerGeneros.get("/gender", verificarUserToken, listarGenders)
+routeGeneros.get("/generos", validarToken, listarGeneros);
 
-export default routerGeneros
+export default routeGeneros;

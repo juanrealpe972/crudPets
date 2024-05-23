@@ -1,11 +1,468 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-    <h1>Prueba documentación</h1>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <h1>Documentación de API</h1>
+
+    <hr />
+    <h2>Endpoint Mascotas</h2>
+    <hr />
+    <h3>Adicionar Mascota</h3>
+    <table>
+      <tr>
+        <td>Numero:</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>Nombre del Servicio</td>
+        <td>Adicionar mascota</td>
+      </tr>
+      <tr>
+        <td>URL</td>
+        <td>/v1/mascotas</td>
+      </tr>
+      <tr>
+        <td>Descripcion:</td>
+        <td>Permite adicionar mascotas a la base de datos</td>
+      </tr>
+      <tr>
+        <td>Verbo HTTP:</td>
+        <td>POST</td>
+      </tr>
+      <tr>
+        <td>HEADER:</td>
+        <td>token: token</td>
+      </tr>
+      <tr>
+        <td>Usuarios:</td>
+        <td>ADMINISTRADOR</td>
+      </tr>
+      <tr>
+        <td>PETICION BODY</td>
+        <td>
+          { "nombre": "Goku", "raza": "Angus", "categoria": "Perro", "image":
+          "photo-sm-1.jpg", "genero": "macho" }
+        </td>
+      </tr>
+      <tr>
+        <td>RESPUESTA JSON</td>
+        <td>
+          Correcto: Status:200 json: { message: "Se registro con éxito la
+          mascota" } <br />
+          Incorrecto: Status:404 body:{ message: "Hubo un error al registrar la
+          mascota" } <br />
+          Error: Status:500 body:{ message:"Error del servidor : " + error }
+        </td>
+      </tr>
+      <tr>
+        <td>Desarrollador:</td>
+        <td>Juan Camilo Realpe Ceron</td>
+      </tr>
+      <tr>
+        <td>Repo:</td>
+        <td>https://github.com/juanrealpe972/crudPets</td>
+      </tr>
+    </table>
+
+    <hr />
+    <h3>Listar mascotas</h3>
+    <table>
+      <tr>
+        <td>Numero:</td>
+        <td>2</td>
+      </tr>
+      <tr>
+        <td>Nombre del Servicio</td>
+        <td>Listar mascotas</td>
+      </tr>
+      <tr>
+        <td>URL</td>
+        <td>/v1/mascotas</td>
+      </tr>
+      <tr>
+        <td>Descripcion:</td>
+        <td>Permite listar todas las mascotas de la base de datos</td>
+      </tr>
+      <tr>
+        <td>Verbo HTTP:</td>
+        <td>GET</td>
+      </tr>
+      <tr>
+        <td>HEADER:</td>
+        <td>token: token</td>
+      </tr>
+      <tr>
+        <td>Usuarios:</td>
+        <td>ADMINISTRADOR</td>
+      </tr>
+      <tr>
+        <td>PETICION BODY</td>
+        <td>NULL</td>
+      </tr>
+      <tr>
+        <td>RESPUESTA JSON</td>
+        <td>
+          Correcto: Status:200 json: [ { "nombre": "Goku", "raza": "Angus",
+          "categoria": "Perro", "image": "photo-sm-1.jpg", "genero": "macho" }]
+          <br />
+          Incorrecto: Status:404 body:{ message:'No se encontraron mascotas' }
+          <br />
+          Error: Status:500 body:{ message:"Error del servidor" + error }
+        </td>
+      </tr>
+      <tr>
+        <td>Desarrollador:</td>
+        <td>Juan Camilo Realpe Ceron</td>
+      </tr>
+      <tr>
+        <td>Repo:</td>
+        <td>https://github.com/juanrealpe972/crudPets</td>
+      </tr>
+    </table>
+
+    <hr />
+    <h3>Actualizar mascotas</h3>
+    <table>
+      <tr>
+        <td>Numero:</td>
+        <td>3</td>
+      </tr>
+      <tr>
+        <td>Nombre del Servicio</td>
+        <td>Actualizar mascotas</td>
+      </tr>
+      <tr>
+        <td>URL</td>
+        <td>/v1/mascotas/:id</td>
+      </tr>
+      <tr>
+        <td>Descripcion:</td>
+        <td>Permite actualizar mascotas de la base de datos</td>
+      </tr>
+      <tr>
+        <td>Verbo HTTP:</td>
+        <td>PUT</td>
+      </tr>
+      <tr>
+        <td>HEADER:</td>
+        <td>token: token</td>
+      </tr>
+      <tr>
+        <td>Usuarios:</td>
+        <td>ADMINISTRADOR</td>
+      </tr>
+      <tr>
+        <td>PETICION BODY</td>
+        <td>
+          { "nombre": "Dora", "raza": "Persa", "categoria": "Gato", "image":
+          "photo-sm-3.jpg", "genero": "hembra" }
+        </td>
+      </tr>
+      <tr>
+        <td>RESPUESTA JSON</td>
+        <td>
+          Correcto: Status:200 json: { message: 'Mascota actualizada
+          éxitosamente' } <br />
+          Incorrecto: Status:404 body:{ message: 'Error al actualizar la
+          mascota' } <br />
+          Error: Status:500 body:{ message: "Error del servidor" + error }
+        </td>
+      </tr>
+      <tr>
+        <td>Desarrollador:</td>
+        <td>Juan Camilo Realpe Ceron</td>
+      </tr>
+      <tr>
+        <td>Repo:</td>
+        <td>https://github.com/juanrealpe972/crudPets</td>
+      </tr>
+    </table>
+
+    <hr />
+    <h3>Buscar mascotas</h3>
+    <table>
+      <tr>
+        <td>Numero:</td>
+        <td>4</td>
+      </tr>
+      <tr>
+        <td>Nombre del Servicio</td>
+        <td>Buscar mascotas</td>
+      </tr>
+      <tr>
+        <td>URL</td>
+        <td>/v1/mascotas/:id</td>
+      </tr>
+      <tr>
+        <td>Descripcion:</td>
+        <td>Permite buscar mascotas una mascota en la base de datos</td>
+      </tr>
+      <tr>
+        <td>Verbo HTTP:</td>
+        <td>GET</td>
+      </tr>
+      <tr>
+        <td>HEADER:</td>
+        <td>token: token</td>
+      </tr>
+      <tr>
+        <td>Usuarios:</td>
+        <td>ADMINISTRADOR</td>
+      </tr>
+      <tr>
+        <td>PETICION BODY</td>
+        <td>NULL</td>
+      </tr>
+      <tr>
+        <td>RESPUESTA JSON</td>
+        <td>
+          Correcto: Status:200 json: { "nombre": "Goku", "raza": "Angus",
+          "categoria": "Perro", "image": "photo-sm-1.jpg", "genero": "macho" }
+          <br />
+          Incorrecto: Status:404 body:{ message: 'Error al encontrar esa mascota
+          con ese ID' } <br />
+          Error: Status:500 body:{ message: "Error del servidor" + error }
+        </td>
+      </tr>
+      <tr>
+        <td>Desarrollador:</td>
+        <td>Juan Camilo Realpe Ceron</td>
+      </tr>
+      <tr>
+        <td>Repo:</td>
+        <td>https://github.com/juanrealpe972/crudPets</td>
+      </tr>
+    </table>
+
+    <hr />
+    <h3>Eliminar mascotas</h3>
+    <table>
+      <tr>
+        <td>Numero:</td>
+        <td>5</td>
+      </tr>
+      <tr>
+        <td>Nombre del Servicio</td>
+        <td>Eliminar mascotas</td>
+      </tr>
+      <tr>
+        <td>URI</td>
+        <td>/v1/mascotas/:id</td>
+      </tr>
+      <tr>
+        <td>Descripcion:</td>
+        <td>Permite eliminar las mascotas de la base de datos</td>
+      </tr>
+      <tr>
+        <td>Verbo HTTP:</td>
+        <td>DELETE</td>
+      </tr>
+      <tr>
+        <td>HEADER:</td>
+        <td>token: token</td>
+      </tr>
+      <tr>
+        <td>Usuarios:</td>
+        <td>ADMINISTRADOR</td>
+      </tr>
+      <tr>
+        <td>PETICION BODY</td>
+        <td>NULL</td>
+      </tr>
+      <tr>
+        <td>RESPUESTA JSON</td>
+        <td>
+          Correcto: Status:200 json: { message: "Mascota eliminada éxitosamente"
+          } <br />
+          Incorrecto: Status:404 body:{ message: 'Error al eliminar la mascota'}
+          <br />
+          Error: Status:500 body:{ message: "Error del servidor" + error }
+          <tr>
+            <td>Desarrollador:</td>
+            <td>Juan Camilo Realpe Ceron</td>
+          </tr>
+          <tr>
+            <td>Repo:</td>
+            <td>https://github.com/juanrealpe972/crudPets</td>
+          </tr>
+        </td>
+      </tr>
+    </table>
+
+    <h2>Endpoint categorias</h2>
+    <hr />
+    <h3>Listar categorias</h3>
+    <table>
+      <tr>
+        <td>Numero:</td>
+        <td>6</td>
+      </tr>
+      <tr>
+        <td>Nombre del Servicio</td>
+        <td>Listar categorias</td>
+      </tr>
+      <tr>
+        <td>URI</td>
+        <td>/v1/categorias</td>
+      </tr>
+      <tr>
+        <td>Descripcion:</td>
+        <td>Permite listar las categorias de la base de datos</td>
+      </tr>
+      <tr>
+        <td>Verbo HTTP:</td>
+        <td>GET</td>
+      </tr>
+      <tr>
+        <td>HEADER:</td>
+        <td>token: token</td>
+      </tr>
+      <tr>
+        <td>Usuarios:</td>
+        <td>ADMINISTRADOR</td>
+      </tr>
+      <tr>
+        <td>PETICION BODY</td>
+        <td>NULL</td>
+      </tr>
+      <tr>
+        <td>RESPUESTA JSON</td>
+        <td>
+          Correcto: Status:200 json: [ { "id_categoria": 1, "nombre_categoria":
+          "Perro" }, { "id_categoria": 2, "nombre_categoria": "Gato" }, ]<br />
+          Incorrecto: Status:404 body:{ message: 'Error al listar las
+          categorias.'}
+          <br />
+          Error: Status:500 body:{ message: "Error del servidor" + error }
+          <tr>
+            <td>Desarrollador:</td>
+            <td>Juan Camilo Realpe Ceron</td>
+          </tr>
+          <tr>
+            <td>Repo:</td>
+            <td>https://github.com/juanrealpe972/crudPets</td>
+          </tr>
+        </td>
+      </tr>
+    </table>
+
+    <h2>Endpoint Razas</h2>
+    <hr />
+    <h3>Listar razas</h3>
+    <table>
+      <tr>
+        <td>Numero:</td>
+        <td>7</td>
+      </tr>
+      <tr>
+        <td>Nombre del Servicio</td>
+        <td>Listar razas</td>
+      </tr>
+      <tr>
+        <td>URI</td>
+        <td>/v1/razas</td>
+      </tr>
+      <tr>
+        <td>Descripcion:</td>
+        <td>Permite listar las razas de la base de datos</td>
+      </tr>
+      <tr>
+        <td>Verbo HTTP:</td>
+        <td>GET</td>
+      </tr>
+      <tr>
+        <td>HEADER:</td>
+        <td>token: token</td>
+      </tr>
+      <tr>
+        <td>Usuarios:</td>
+        <td>ADMINISTRADOR</td>
+      </tr>
+      <tr>
+        <td>PETICION BODY</td>
+        <td>NULL</td>
+      </tr>
+      <tr>
+        <td>RESPUESTA JSON</td>
+        <td>
+          Correcto: Status:200 json: [ { "id_raza": 1, "nombre_raza": "Bulldog"
+          }, { "id_raza": 2, "nombre_raza": "Pastor Alemán" }, { "id_raza": 3,
+          "nombre_raza": "Labrador Retriever" }, ]<br />
+          Incorrecto: Status:404 body:{ message: 'Error al listar las razas.'}
+          <br />
+          Error: Status:500 body:{ message: "Error del servidor" + error }
+          <tr>
+            <td>Desarrollador:</td>
+            <td>Juan Camilo Realpe Ceron</td>
+          </tr>
+          <tr>
+            <td>Repo:</td>
+            <td>https://github.com/juanrealpe972/crudPets</td>
+          </tr>
+        </td>
+      </tr>
+    </table>
+
+    <h2>Endpoint Generos</h2>
+    <hr />
+    <h3>Listar generos</h3>
+    <table>
+      <tr>
+        <td>Numero:</td>
+        <td>8</td>
+      </tr>
+      <tr>
+        <td>Nombre del Servicio</td>
+        <td>Listar generos</td>
+      </tr>
+      <tr>
+        <td>URI</td>
+        <td>/v1/generos</td>
+      </tr>
+
+      <tr>
+        <td>Descripcion:</td>
+        <td>Permite listar los generos de la base de datos</td>
+      </tr>
+      <tr>
+        <td>Verbo HTTP:</td>
+        <td>GET</td>
+      </tr>
+      <tr>
+        <td>HEADER:</td>
+        <td>token: token</td>
+      </tr>
+      <tr>
+        <td>Usuarios:</td>
+        <td>ADMINISTRADOR</td>
+      </tr>
+      <tr>
+        <td>PETICION BODY</td>
+        <td>NULL</td>
+      </tr>
+      <tr>
+        <td>RESPUESTA JSON</td>
+        <td>
+          Correcto: Status:200 json: [ { "id_genero": 1, "nombre_genero":
+          "macho" }, { "id_genero": 2, "nombre_genero": "hembra" } ]<br />
+          Incorrecto: Status:404 body:{ message: 'Error al listar los generos.'}
+          <br />
+          Error: Status:500 body:{ message: "Error del servidor" + error }
+          <tr>
+            <td>Desarrollador:</td>
+            <td>Juan Camilo Realpe Ceron</td>
+          </tr>
+          <tr>
+            <td>Repo:</td>
+            <td>https://github.com/juanrealpe972/crudPets</td>
+          </tr>
+        </td>
+      </tr>
+    </table>
+  </body>
 </html>

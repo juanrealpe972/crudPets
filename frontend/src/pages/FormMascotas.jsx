@@ -1,80 +1,119 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaAngleLeft } from "react-icons/fa6";
-
-import bg from "../assets/bg.jpg";
+import img from "../assets/bg.jpg";
 import photoIcon from "../assets/photo-lg-0.jpg";
-import iconoClose from "../assets/btn-close.jpg";
+import iconClose from "../assets/btn-close.jpg";
 import save from "../assets/btn-save.jpg";
-import update from "../assets/btn-update.jpg";
+import modificar from "../assets/btn-update.jpg";
 import iconCamera from "../assets/iconCameraPng.png";
-
 import { useHelpsContext } from "../context/HelpsContext.jsx";
+import axiosClient from "../api/axiosClient.js";
 
 const FormMascotas = () => {
-  const {
-    createMascotas,
-    updateMascotas,
-    idMascota,
-    generos,
-    getGeneros,
-    getRazas,
-    razas,
-    getCategorias,
-    categorias,
-  } = useHelpsContext();
+  const [generos, setGeneros] = useState([]);
+  const [razas, setRazas] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const { idMascota, mode, mascota, getMascotasId } = useHelpsContext();
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
   const [formData, setFormData] = useState({
     nombre: "",
-    raza: "",
     categoria: "",
     image: "",
+    raza: "",
     genero: "",
   });
 
-  const mode = ""
+  useEffect(() => {
+    axiosClient.get("/v1/generos").then((response) => {
+      setGeneros(response.data);
+    });
+  }, []);
 
   useEffect(() => {
-    getGeneros();
-    getCategorias();
-    getRazas();
+    axiosClient.get("/v1/razas").then((response) => {
+      setRazas(response.data);
+    });
+  }, []);
+
+  useEffect(() => {
+    axiosClient.get("/v1/categorias").then((response) => {
+      setCategorias(response.data);
+    });
   }, []);
 
   useEffect(() => {
     if (mode === "update" && idMascota) {
-      setFormData({
-        nombre: idMascota.nombre_mascota,
-        raza: idMascota.raza,
-        categoria: idMascota.categoria,
-        image: idMascota.imagen,
-        genero: idMascota.genero,
-      });
-      console.log("Datos mascota:", idMascota);
+      getMascotasId(idMascota);
     }
   }, [mode, idMascota]);
 
-  const logout = () => {
-    localStorage.clear();
-    alert("Cierre de sesión éxitoso");
-    navigate(`/`);
+  useEffect(() => {
+    if (mascota && mode === "update") {
+      setFormData({
+        nombre: mascota.nombre_mascota || "",
+        categoria: mascota.id_categoria || "",
+        image: mascota.image || "",
+        genero: mascota.id_genero || "",
+        raza: mascota.id_raza || "",
+      });
+    }
+  }, [mascota, mode]);
+
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === "file" ? files[0] : value,
+    }));
+  };
+
+  const createMascotas = async (data) => {
+    try {
+      axiosClient.post("/v1/mascotas", data).then((response) => {
+        if (response.status === 200) {
+          alert(response.data.message);
+          navigate("/listpets");
+        } else {
+          alert(response.data.message);
+        }
+      });
+    } catch (error) {
+      console.log("Error del servidor" + error);
+    }
+  };
+
+  const updateMascotas = (id, data) => {
+    try {
+      axiosClient.put(`/v1/mascotas/${id}`, data).then((response) => {
+        if (response.status === 200) {
+          alert(response.data.message);
+          navigate("/listpets");
+        } else {
+          alert(response.data.message);
+        }
+      });
+    } catch (error) {
+      console.log("Error del servidor" + error);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const datosSubmit = new FormData();
-    datosSubmit.append("nombre_mascota", formData.nombre);
-    datosSubmit.append("fk_raza", formData.raza);
-    datosSubmit.append("fk_categoria", formData.categoria);
-    datosSubmit.append("imagen", formData.image);
-    datosSubmit.append("fk_genero", formData.genero);
-    datosSubmit.append("fk_user", user.id);
+    datosSubmit.append("nombre", formData.nombre);
+    datosSubmit.append("raza", formData.raza);
+    datosSubmit.append("categoria", formData.categoria);
+    datosSubmit.append("image", formData.image);
+    datosSubmit.append("genero", formData.genero);
     try {
       if (mode === "update") {
-        await updateMascotas(idMascota, datosSubmit);
+        updateMascotas(idMascota, datosSubmit);
       } else {
-        await createMascotas(datosSubmit);
+        datosSubmit.append("fk_user", user.id_user);
+        createMascotas(datosSubmit);
       }
     } catch (error) {
       console.log("Error del servidor" + error);
@@ -85,12 +124,12 @@ const FormMascotas = () => {
     <div
       className="flex flex-col items-center min-h-screen"
       style={{
-        backgroundImage: `url(${bg})`,
+        backgroundImage: `url(${img})`,
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="flex mt-14 items-center justify-between">
+      <div className="flex mt-12 items-center justify-between">
         <FaAngleLeft
           className="mr-20 flex text-white text-xl cursor-pointer"
           onClick={() => navigate("/listpets")}
@@ -99,129 +138,134 @@ const FormMascotas = () => {
           {mode === "create" ? "Adicionar mascota" : "Actualizar mascota"}
         </label>
         <img
-          className="flex justify-between rounded-full cursor-pointer"
-          src={iconoClose}
-          onClick={() => logout()}
+          className="flex justify-between rounded-full"
+          src={iconClose}
           alt=""
         />
       </div>
-      <div className="mt-10">
-        <img className="rounded-full" src={photoIcon} alt="" />
+      <div className="mt-16">
+        <img
+          className={`rounded-full ${mode === "update" ? "w-40 h-40" : ""}`}
+          src={
+            mode === "create"
+              ? photoIcon
+              : `http://localhost:4001/img/${mascota.image}`
+          }
+          alt="Foto de mascota"
+        />
       </div>
-      <form onSubmit={handleSubmit} className="w-full max-w-sm pt-12">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm pt-24">
         <div className="mb-4">
           <input
             type="text"
             id="nombre"
             name="nombre"
-            placeholder="Nombre de la mascota"
+            placeholder="Nombre"
             value={formData.nombre}
-            onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  nombre: e.target.value,
-                }))
-            }
-            className="w-full bg-[#96a2ba] px-3 py-2 rounded-2xl border border-gray-400 bg-transparent focus:outline-none ml-5 placeholder-blue-950"
+            onChange={handleChange}
+            className="w-[355px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 bg-transparent focus:outline-none ml-4 placeholder-blue-950"
             style={{ height: "40px", width: "90%" }}
             required
           />
         </div>
         <div className="mb-4">
           <select
-            className="w-[355px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 bg-transparent focus:outline-none ml-4 placeholder-blue-950"
+            className="w-[350px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 bg-transparent focus:outline-none ml-4 placeholder-blue-950"
+            value={formData.raza}
+            onChange={handleChange}
             name="raza"
             id="raza"
-            onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  raza: e.target.value,
-                }))
-            }
-            value={formData.raza}
           >
             <option value="" hidden>
-              Seleccionar la raza...
+              Seleccione la raza...
             </option>
-            {razas.map((race, i) => (
-              <option key={i} value={race.id_razas}>
-                {race.nombre_razas}
+            {razas.map((race) => (
+              <option key={race.id_raza} value={race.id_raza}>
+                {race.nombre_raza}
               </option>
             ))}
           </select>
         </div>
         <div className="mb-4">
           <select
-            className="w-[355px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 bg-transparent focus:outline-none ml-4 placeholder-blue-950"
+            className="w-[350px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 bg-transparent focus:outline-none ml-4 placeholder-blue-950"
             name="categoria"
             value={formData.categoria}
-            onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  categoria: e.target.value,
-                }))
-            }
+            onChange={handleChange}
+            id="categoria"
           >
             <option value="" hidden>
-              Seleccionar la categoría...
+              Seleccione categoria...
             </option>
-            {categorias.map((category, i) => (
-              <option key={i} value={category.id_categorias}>
-                {category.nombre_categorias}
+            {categorias.map((category) => (
+              <option key={category.id_categoria} value={category.id_categoria}>
+                {category.nombre_categoria}
               </option>
             ))}
           </select>
         </div>
-        <div className="relative mb-4 w-[355px] ml-4 bg-[#96a2ba] p-2 rounded-2xl">
-          <input type="file" className="opacity-0 w-0 h-0" />
-          <label htmlFor="fileInput" className="cursor-pointer text-blue-950">
-            Seleccionar imagen
+        <div className="relative mb-4 flex justify-center">
+          <input
+            placeholder="Imagen de usuario"
+            type="file"
+            name="image"
+            className="hidden"
+            id="fileInput"
+            onChange={handleChange}
+          />
+          <label
+            htmlFor="fileInput"
+            className="cursor-pointer items-center w-[345px] flex bg-[#8d9db9] rounded-full"
+          >
+            <div className="flex items-center w-[200px] h-10 transition duration-300">
+              <span className="text-blue-950 w-full ml-4">
+                Seleccionar imagen
+              </span>
+            </div>
           </label>
           <img
             src={iconCamera}
-            alt="iconCamera"
-            className="absolute top-0 right-2 mt-3 ml-3 rounded-full"
+            alt="camera"
+            className="absolute top-0 right-8 mt-3 ml-3 rounded-full"
             style={{ width: "20px", height: "20px" }}
           />
         </div>
         <div className="mb-4">
-          <select
-            className="w-[355px] bg-[#96a2ba] px-2 py-2 rounded-2xl text-blue-950 border border-gray-400 bg-transparent focus:outline-none ml-4 placeholder-blue-950"
-            name="genero"
-            value={formData.genero}
-            onChange={(e) =>
-                setFormData((prevData) => ({
-                  ...prevData,
-                  genero: e.target.value,
-                }))
-            }
-          >
-            <option value="" hidden>
-              Seleccionar el género...
-            </option>
-            {generos.map((gender, i) => (
-              <option key={i} value={gender.id_generos}>
-                {gender.nombre_generos}
+          <div className="relative">
+            <select
+              className="w-[350px] bg-[#96a2ba] px-3 py-2 text-blue-950 rounded-2xl border border-gray-400 bg-transparent focus:outline-none ml-4 placeholder-blue-950"
+              name="genero"
+              value={formData.genero}
+              onChange={handleChange}
+              id="genero"
+            >
+              <option value="" hidden>
+                Seleccione genero...
               </option>
-            ))}
-          </select>
+              {generos.map((gender) => (
+                <option key={gender.id_genero} value={gender.id_genero}>
+                  {gender.nombre_genero}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <button>
           {mode === "create" ? (
             <img
-              src={save}
-              alt="Guardar"
-              onSubmit={handleSubmit}
-              style={{ width: "90%" }}
               className="rounded-full ml-5 cursor-pointer"
+              style={{ width: "90%" }}
+              src={save}
+              alt=""
+              onSubmit={handleSubmit}
             />
           ) : (
             <img
-              src={update}
-              alt="Modificar"
-              onSubmit={handleSubmit}
-              style={{ width: "90%" }}
               className="rounded-full ml-5 cursor-pointer"
+              style={{ width: "90%" }}
+              src={modificar}
+              alt=""
+              onSubmit={handleSubmit}
             />
           )}
         </button>

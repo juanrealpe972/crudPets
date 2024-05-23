@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { listarCategory } from "../controllers/categorias.controller.js";
-import { verificarUserToken } from "../controllers/user.controller.js";
+import { listarCategorias } from "../controllers/categoria.controller.js";
+import { validarToken } from "../controllers/user.controller.js";
 
-const routerCategorias = Router()
+const routeCategorias = Router();
 
-routerCategorias.get("/category", verificarUserToken, listarCategory)
+routeCategorias.get("/categorias", validarToken, listarCategorias);
 
-export default routerCategorias
+export default routeCategorias;

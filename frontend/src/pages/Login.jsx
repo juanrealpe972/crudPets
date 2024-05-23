@@ -4,7 +4,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import ImagenUser from "../assets/bg-login.svg";
 
-function LoginUser() {
+function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -107,4 +107,4 @@ function LoginUser() {
   );
 }
 
-export default LoginUser;
+export default Login;
