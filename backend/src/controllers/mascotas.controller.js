@@ -30,7 +30,7 @@ export const registrarMascota = async (req, res) => {
 
     let sql = `INSERT INTO mascotas (nombre_mascota,fk_raza, fk_categoria, image, fk_genero, fk_user) VALUES (?, ?, ?, ?, ?, ?)`;
 
-    const [rows] = await pool.query(sql, [ nombre, raza, categoria, image, genero, fk_user, ]);
+    const [rows] = await pool.query(sql, [ nombre, raza, categoria, imagen, genero, fk_user, ]);
 
     if (rows.affectedRows > 0) {
       res.status(200).json({message: "Se registro con éxito la mascota",});
